@@ -9,7 +9,7 @@
 	"compatibility_date": "2025-12-31",
 	"observability": {
 		"enabled": true
-	}
+	},
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
@@ -27,7 +27,13 @@
 	 * Note: Use secrets to store sensitive data.
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
-	// "vars": {  "MY_VARIABLE": "production_value" }
+	"vars": {
+		"PRODUCT_KEYS": [
+			"zX2imXZVjQRPQlsQ0CxIpOMQM0DThZ8nnG2t7of63Jc",
+			"036US7NTr1aT8jWSgVJ2sXeGTbkvgW2hbvYgiHjUnwD",
+			"DKpFO9RTofSN5gjTNRvBnd0BkrlHaWq9DbmhmbDpOhW"
+		]
+	}
 	/**
 	 * Static Assets
 	 * https://developers.cloudflare.com/workers/static-assets/binding/
