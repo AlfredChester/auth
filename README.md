@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This project is an out-of-the-box cloud authentication powered by cloudflare workers. You can manage licenses for your software with ease.
+This project is an out-of-the-box cloud authentication powered by cloudflare workers. You can manage licenses for your software with ease. For multiple products, simply create separate namespaces for each product.
 
 ## Usage
 
