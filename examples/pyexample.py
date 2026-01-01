@@ -19,7 +19,7 @@ class KeyVerifier:
         key_hash = KeyVerifier.calculate_hash(key, salt)
         # Send request to server to verify key
         response = requests.post(
-            KeyVerifier.SERVER_URL + "verify_key",
+            KeyVerifier.SERVER_URL + "check",
             json={
                 "key": key_hash,
                 "salt": salt,
