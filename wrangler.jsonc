@@ -21,6 +21,13 @@
 	 * databases, object storage, AI inference, real-time communication and more.
 	 * https://developers.cloudflare.com/workers/runtime-apis/bindings/
 	 */
+	"d1_databases": [
+		{
+			"binding": "auth_db",
+			"database_name": "auth-db",
+			"database_id": "a4736e5b-291f-4f6c-8c63-a39623fc3d3d"
+		}
+	],
 	/**
 	 * Environment Variables
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
@@ -28,11 +35,6 @@
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
 	"vars": { // Just as an example, do not use in production.
-		"PRODUCT_KEYS": [
-			"zX2imXZVjQRPQlsQ0CxIpOMQM0DThZ8nnG2t7of63Jc",
-			"036US7NTr1aT8jWSgVJ2sXeGTbkvgW2hbvYgiHjUnwD",
-			"DKpFO9RTofSN5gjTNRvBnd0BkrlHaWq9DbmhmbDpOhW"
-		],
 		"SERVER_KEY": "ncrfQY9J6Id2VzhTlTdrXBHsGXM4jTLZkj7mBGAks3s"
 	}
 	/**
