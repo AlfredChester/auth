@@ -20,7 +20,7 @@ This project is an out-of-the-box cloud authentication powered by cloudflare wor
    # For production:
    npx wrangler d1 migrate auth-db --remote
    ``` 
-10. Your authentication app is now live! 🎉
+10. Your authentication app is now live! 🎉 Use `scripts/add_key.sh` to add your first key. You may also use other scripts to manage keys.
 
 ## License
 
