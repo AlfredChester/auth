@@ -27,12 +27,13 @@
 	 * Note: Use secrets to store sensitive data.
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
-	"vars": {
-		"PRODUCT_KEYS": [ // Just as an example, do not use in production.
+	"vars": { // Just as an example, do not use in production.
+		"PRODUCT_KEYS": [
 			"zX2imXZVjQRPQlsQ0CxIpOMQM0DThZ8nnG2t7of63Jc",
 			"036US7NTr1aT8jWSgVJ2sXeGTbkvgW2hbvYgiHjUnwD",
 			"DKpFO9RTofSN5gjTNRvBnd0BkrlHaWq9DbmhmbDpOhW"
-		]
+		],
+		"SERVER_KEY": "ncrfQY9J6Id2VzhTlTdrXBHsGXM4jTLZkj7mBGAks3s"
 	}
 	/**
 	 * Static Assets
