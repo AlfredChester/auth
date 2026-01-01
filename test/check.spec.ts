@@ -1,30 +1,9 @@
 import { env, createExecutionContext, waitOnExecutionContext } from 'cloudflare:test';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { checkHandler } from '../src/handlers/check';
-
-// For correctly-typed Request
-const IncomingRequest = Request<unknown, IncomingRequestCfProperties>;
+import { calculateHash } from '../src/utils/hash';
 
 describe('checkHandler', () => {
-	// Helper function to calculate HMAC-SHA256 hash
-	async function calculateHash(key: string, salt: string): Promise<string> {
-		const encoder = new TextEncoder();
-		const keyData = encoder.encode(key);
-		const saltData = encoder.encode(salt);
-
-		const cryptoKey = await crypto.subtle.importKey(
-			'raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
-		);
-
-		const signature = await crypto.subtle.sign(
-			'HMAC', cryptoKey, saltData
-		);
-
-		return Array.from(new Uint8Array(signature))
-			.map(b => b.toString(16).padStart(2, '0'))
-			.join('');
-	}
-
 	beforeEach(async () => {
 		// Set up test database schema
 		await env.auth_db.prepare(`
@@ -66,28 +45,28 @@ describe('checkHandler', () => {
 
 	describe('Missing parameters', () => {
 		it('returns 400 when val parameter is missing', async () => {
-			const request = new IncomingRequest('http://example.com/check?version=1.0.0&salt=test_salt');
+			const request = new Request('http://example.com/check?version=1.0.0&salt=test_salt');
 			const response = await checkHandler(request, env);
 			expect(response.status).toBe(400);
 			expect(await response.text()).toBe('Missing parameters: val, version, or salt');
 		});
 
 		it('returns 400 when version parameter is missing', async () => {
-			const request = new IncomingRequest('http://example.com/check?val=test_val&salt=test_salt');
+			const request = new Request('http://example.com/check?val=test_val&salt=test_salt');
 			const response = await checkHandler(request, env);
 			expect(response.status).toBe(400);
 			expect(await response.text()).toBe('Missing parameters: val, version, or salt');
 		});
 
 		it('returns 400 when salt parameter is missing', async () => {
-			const request = new IncomingRequest('http://example.com/check?val=test_val&version=1.0.0');
+			const request = new Request('http://example.com/check?val=test_val&version=1.0.0');
 			const response = await checkHandler(request, env);
 			expect(response.status).toBe(400);
 			expect(await response.text()).toBe('Missing parameters: val, version, or salt');
 		});
 
 		it('returns 400 when all parameters are missing', async () => {
-			const request = new IncomingRequest('http://example.com/check');
+			const request = new Request('http://example.com/check');
 			const response = await checkHandler(request, env);
 			expect(response.status).toBe(400);
 			expect(await response.text()).toBe('Missing parameters: val, version, or salt');
@@ -96,20 +75,20 @@ describe('checkHandler', () => {
 
 	describe('Invalid version format', () => {
 		it('returns 400 for invalid version format', async () => {
-			const request = new IncomingRequest('http://example.com/check?val=test_val&version=invalid&salt=test_salt');
+			const request = new Request('http://example.com/check?val=test_val&version=invalid&salt=test_salt');
 			const response = await checkHandler(request, env);
 			expect(response.status).toBe(400);
 			expect(await response.text()).toBe('Invalid version format');
 		});
 
 		it('returns 400 for empty version string', async () => {
-			const request = new IncomingRequest('http://example.com/check?val=test_val&version=&salt=test_salt');
+			const request = new Request('http://example.com/check?val=test_val&version=&salt=test_salt');
 			const response = await checkHandler(request, env);
 			expect(response.status).toBe(400);
 		});
 
 		it('returns 400 for malformed version', async () => {
-			const request = new IncomingRequest('http://example.com/check?val=test_val&version=1.0.x.y&salt=test_salt');
+			const request = new Request('http://example.com/check?val=test_val&version=1.0.x.y&salt=test_salt');
 			const response = await checkHandler(request, env);
 			expect(response.status).toBe(400);
 			expect(await response.text()).toBe('Invalid version format');
@@ -128,7 +107,7 @@ describe('checkHandler', () => {
 			// Calculate expected server response
 			const expectedServerHash = await calculateHash(env.SERVER_KEY, salt);
 			
-			const request = new IncomingRequest(
+			const request = new Request(
 				`http://example.com/check?val=${expectedHash}&version=${version}&salt=${salt}`
 			);
 			const response = await checkHandler(request, env);
@@ -146,7 +125,7 @@ describe('checkHandler', () => {
 			const expectedHash = await calculateHash(key, salt);
 			const expectedServerHash = await calculateHash(env.SERVER_KEY, salt);
 			
-			const request = new IncomingRequest(
+			const request = new Request(
 				`http://example.com/check?val=${expectedHash}&version=${version}&salt=${salt}`
 			);
 			const response = await checkHandler(request, env);
@@ -163,7 +142,7 @@ describe('checkHandler', () => {
 			const expectedHash = await calculateHash(key, salt);
 			const expectedServerHash = await calculateHash(env.SERVER_KEY, salt);
 			
-			const request = new IncomingRequest(
+			const request = new Request(
 				`http://example.com/check?val=${expectedHash}&version=${version}&salt=${salt}`
 			);
 			const response = await checkHandler(request, env);
@@ -179,7 +158,7 @@ describe('checkHandler', () => {
 			const version = '1.0.0';
 			const incorrectHash = 'wrong_hash_value';
 			
-			const request = new IncomingRequest(
+			const request = new Request(
 				`http://example.com/check?val=${incorrectHash}&version=${version}&salt=${salt}`
 			);
 			const response = await checkHandler(request, env);
@@ -196,7 +175,7 @@ describe('checkHandler', () => {
 			// Calculate hash for a key that doesn't exist in DB
 			const hash = await calculateHash(key, salt);
 			
-			const request = new IncomingRequest(
+			const request = new Request(
 				`http://example.com/check?val=${hash}&version=${version}&salt=${salt}`
 			);
 			const response = await checkHandler(request, env);
@@ -211,7 +190,7 @@ describe('checkHandler', () => {
 			// Using test_key_2 hash but version matches test_key_1 range
 			const wrongKeyHash = await calculateHash('test_key_2', salt);
 			
-			const request = new IncomingRequest(
+			const request = new Request(
 				`http://example.com/check?val=${wrongKeyHash}&version=${version}&salt=${salt}`
 			);
 			const response = await checkHandler(request, env);
@@ -229,7 +208,7 @@ describe('checkHandler', () => {
 			
 			const hash = await calculateHash(key, salt);
 			
-			const request = new IncomingRequest(
+			const request = new Request(
 				`http://example.com/check?val=${hash}&version=${version}&salt=${salt}`
 			);
 			const response = await checkHandler(request, env);
@@ -246,7 +225,7 @@ describe('checkHandler', () => {
 			const hash = await calculateHash(key, salt);
 			const expectedServerHash = await calculateHash(env.SERVER_KEY, salt);
 			
-			const request = new IncomingRequest(
+			const request = new Request(
 				`http://example.com/check?val=${hash}&version=${version}&salt=${salt}`
 			);
 			const response = await checkHandler(request, env);
@@ -262,7 +241,7 @@ describe('checkHandler', () => {
 			
 			const hash = await calculateHash(key, salt);
 			
-			const request = new IncomingRequest(
+			const request = new Request(
 				`http://example.com/check?val=${hash}&version=${version}&salt=${salt}`
 			);
 			const response = await checkHandler(request, env);
@@ -279,7 +258,7 @@ describe('checkHandler', () => {
 			const hash = await calculateHash(key, salt);
 			const expectedServerHash = await calculateHash(env.SERVER_KEY, salt);
 			
-			const request = new IncomingRequest(
+			const request = new Request(
 				`http://example.com/check?val=${hash}&version=${version}&salt=${salt}`
 			);
 			const response = await checkHandler(request, env);
@@ -298,7 +277,7 @@ describe('checkHandler', () => {
 			const clientHash = await calculateHash(key, salt);
 			const expectedServerHash = await calculateHash(env.SERVER_KEY, salt);
 			
-			const request = new IncomingRequest(
+			const request = new Request(
 				`http://example.com/check?val=${clientHash}&version=${version}&salt=${salt}`
 			);
 			const response = await checkHandler(request, env);
@@ -319,7 +298,7 @@ describe('checkHandler', () => {
 			
 			// First request
 			const hash1 = await calculateHash(key, salt1);
-			const request1 = new IncomingRequest(
+			const request1 = new Request(
 				`http://example.com/check?val=${hash1}&version=${version}&salt=${salt1}`
 			);
 			const response1 = await checkHandler(request1, env);
@@ -327,7 +306,7 @@ describe('checkHandler', () => {
 			
 			// Second request with different salt
 			const hash2 = await calculateHash(key, salt2);
-			const request2 = new IncomingRequest(
+			const request2 = new Request(
 				`http://example.com/check?val=${hash2}&version=${version}&salt=${salt2}`
 			);
 			const response2 = await checkHandler(request2, env);
@@ -344,7 +323,7 @@ describe('checkHandler', () => {
 			
 			const hash = await calculateHash(key, salt);
 			
-			const request = new IncomingRequest(
+			const request = new Request(
 				`http://example.com/check?val=${hash}&version=${version}&salt=${salt}`
 			);
 			const response = await checkHandler(request, env);
