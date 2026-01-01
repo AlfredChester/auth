@@ -35,7 +35,7 @@
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
 	"vars": { // Just as an example, do not use in production.
-		"SERVER_KEY": "ncrfQY9J6Id2VzhTlTdrXBHsGXM4jTLZkj7mBGAks3s"
+		"SERVER_KEY": "YOUR_SERVER_KEY_HERE"
 	}
 	/**
 	 * Static Assets
