@@ -23,7 +23,17 @@ async function calculateHash(key: string, salt: string): Promise<string> {
 
 describe('checkHandler', () => {
 	beforeEach(async () => {
-		// Setup test data in the database
+		// Create the table if it doesn't exist
+		await env.auth_db.prepare(`
+			CREATE TABLE IF NOT EXISTS product_keys (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				key_value TEXT NOT NULL,
+				semver_range TEXT NOT NULL,
+				created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+			)
+		`).run();
+
+		// Clean up test data
 		await env.auth_db.prepare(
 			'DELETE FROM product_keys'
 		).run();
