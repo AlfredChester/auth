@@ -11,11 +11,13 @@
 	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "^0.8.19",
+		"@types/semver": "^7.7.1",
 		"typescript": "^5.5.2",
 		"vitest": "~3.2.0",
 		"wrangler": "^4.56.0"
 	},
 	"dependencies": {
-		"@passwordless-id/webauthn": "^2.3.1"
+		"@passwordless-id/webauthn": "^2.3.1",
+		"semver": "^7.7.3"
 	}
 }
