@@ -27,13 +27,14 @@ export const checkHandler = async (request: Request, env: Env) => {
 
     let isValid = false;
     if (results) {
-        for (const row of results) {
+        for (let i = 0; i < results.length; i++) {
+            const row = results[i];
             const key = row.key_value as string;
             const range = row.semver_range as string;
 
             // Validate the semver range from the database
             if (!semver.validRange(range)) {
-                console.warn('Invalid semver range found in database for key at position', results.indexOf(row));
+                console.warn('Invalid semver range found in database');
                 continue;
             }
 
