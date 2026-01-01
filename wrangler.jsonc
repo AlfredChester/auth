@@ -25,7 +25,7 @@
 		{
 			"binding": "auth_db",
 			"database_name": "auth-db",
-			"database_id": "YOUR_DATABASE_ID_HERE"
+			"database_id": "a4736e5b-291f-4f6c-8c63-a39623fc3d3d"
 		}
 	],
 	/**
@@ -34,9 +34,9 @@
 	 * Note: Use secrets to store sensitive data.
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
-	"vars": { // Just as an example, do not use in production.
-		"SERVER_KEY": "YOUR_SERVER_KEY_HERE"
-	}
+	// "vars": { // Deprecated: Use secrets instead.
+	// 	"SERVER_KEY": "ncrfQY9J6Id2VzhTlTdrXBHsGXM4jTLZkj7mBGAks3s"
+	// }
 	/**
 	 * Static Assets
 	 * https://developers.cloudflare.com/workers/static-assets/binding/

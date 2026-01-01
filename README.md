@@ -14,7 +14,7 @@ This project is an out-of-the-box cloud authentication powered by cloudflare wor
    openssl rand -base64 32
    ```
 5. Write the server key to `wrangler.jsonc`.
-6. Run `wrangler deploy` to publish your project.
+6. Run `wrangler secret put SERVER_KEY` to store the server key as a secret.
 7. Run `npx wrangler d1 create auth-db` to create a new D1 database.
 8. Update `wrangler.jsonc` with your database ID produced in step 7.
 9. Apply migration by running the following command:
