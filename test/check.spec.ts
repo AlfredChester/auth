@@ -1,4 +1,4 @@
-import { env, createExecutionContext, waitOnExecutionContext } from 'cloudflare:test';
+import { env } from 'cloudflare:test';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { checkHandler } from '../src/handlers/check';
 import { calculateHash } from '../src/utils/hash';
