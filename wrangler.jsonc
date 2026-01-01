@@ -25,7 +25,7 @@
 		{
 			"binding": "auth_db",
 			"database_name": "auth-db",
-			"database_id": "a4736e5b-291f-4f6c-8c63-a39623fc3d3d"
+			"database_id": "YOUR_DATABASE_ID_HERE"
 		}
 	],
 	/**
