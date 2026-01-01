@@ -16,9 +16,12 @@ export const checkHandler = async (request: Request, env: Env) => {
     }
 
     // Phase one: check ID
-    // Get all keys from the database
+    // Note: We fetch all keys because we need to compute HMAC-SHA256 for each key with the
+    // client-provided salt, which cannot be done in the database query. The indexes on
+    // key_value and semver_range help with query performance. For production systems with
+    // a large number of keys, consider implementing caching or partitioning strategies.
     const { results } = await env.auth_db.prepare(
-        'SELECT key_value, semver_range FROM product_keys'
+        'SELECT key_value, semver_range FROM product_keys LIMIT 1000'
     ).all();
 
     let isValid = false;
@@ -26,6 +29,12 @@ export const checkHandler = async (request: Request, env: Env) => {
         for (const row of results) {
             const key = row.key_value as string;
             const range = row.semver_range as string;
+
+            // Validate the semver range from the database
+            if (!semver.validRange(range)) {
+                console.warn(`Invalid semver range in database: ${range}`);
+                continue;
+            }
 
             // Check if the version satisfies the semver range
             if (semver.satisfies(version, range)) {

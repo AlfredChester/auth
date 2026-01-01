@@ -9,6 +9,7 @@ class KeyVerifier:
     SERVER_KEY = "YOUR_SERVER_KEY_HERE"
     SALT_LENGTH = 32
 
+    @staticmethod
     def calculate_hash(key: str, salt: str) -> str:
         key_bytes = key.encode("utf-8")
         salt_bytes = salt.encode("utf-8")
@@ -17,6 +18,7 @@ class KeyVerifier:
 
         return signature
 
+    @staticmethod
     def verify_key(key: str, version: str) -> bool:
         salt = "".join(
             [
